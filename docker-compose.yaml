@@ -1,0 +1,44 @@
+version: '2.4'
+
+networks:
+
+  redisnet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+services:
+
+  redis-standalone:
+    build: ./redis
+    image: 'bitnami/redis:latest'
+    environment:
+      ALLOW_EMPTY_PASSWORD: 'yes'
+      X_REDIS_PORT: 9007
+    ports:
+      - 9007:9007
+    networks:
+      redisnet:
+        ipv4_address: 172.28.1.4
+    pids_limit: 10
+    cpus: 0.5
+    mem_limit: '500mb'
+    blkio_config:
+      weight: 300
+      weight_device:
+        - path: /dev/sda
+          weight: 400
+      device_read_bps:
+        - path: /dev/sdb
+          rate: '12mb'
+      device_read_iops:
+        - path: /dev/sdb
+          rate: 120
+      device_write_bps:
+        - path: /dev/sdb
+          rate: '1024k'
+      device_write_iops:
+        - path: /dev/sdb
+          rate: 30
+      
